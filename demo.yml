@@ -1,0 +1,33 @@
+name: CI/CD pipeline
+on: 
+  push:
+    branches: 
+      -main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v2
+
+      - name: install node
+        uses: actions/setup-node@v2
+        with: 
+          node-version: 20.10.0
+
+      - name: instal dependencies
+        run: npm install
+
+      - name: build the code
+        run: npm run build
+    
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: deploy to production
+        run: |
+          ssh root@ip "cd ./app && git pull && pm2 restart all" 
